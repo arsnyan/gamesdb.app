@@ -1,0 +1,53 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Companies" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Компании"
+          }
+        }
+      }
+    },
+    "Connection Error" : {
+
+    },
+    "Game Engines" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Игровые движки"
+          }
+        }
+      }
+    },
+    "No summary was provided for the game" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эта игра без описания"
+          }
+        }
+      }
+    },
+    "Popular Games" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Популярно сейчас"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
