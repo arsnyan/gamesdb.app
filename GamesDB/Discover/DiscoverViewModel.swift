@@ -10,7 +10,7 @@ import RxRelay
 import RxSwift
 import RxCocoa
 
-enum SectionType: Int, CaseIterable {
+enum DiscoverSectionType: Int, CaseIterable {
     case companies = 0
     case gameEngines = 1
     case popularGames = 2

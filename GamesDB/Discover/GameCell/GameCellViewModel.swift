@@ -15,10 +15,12 @@ protocol GameCellViewModelProtocol {
     var genresNames: Driver<String> { get }
     var summary: Driver<String> { get }
     var platformsImagesDatas: Driver<[Data]> { get }
+    
+    var game: Game { get }
 }
 
 class GameCellViewModel: GameCellViewModelProtocol {
-    private let game: Game
+    private(set) var game: Game
     
     private let networkManager = NetworkManager.shared
     
