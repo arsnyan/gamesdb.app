@@ -11,6 +11,8 @@ import RxSwift
 import RxCocoa
 
 class GameMainInfoCellView: UITableViewCell {
+    static let reuseIdentifier = "GameMainInfoCellView"
+    
     private var viewModel: GameCellViewModelProtocol?
     private var disposeBag = DisposeBag()
     
@@ -30,6 +32,7 @@ class GameMainInfoCellView: UITableViewCell {
     private let genresLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.numberOfLines = 0
         label.textColor = .secondaryLabel
         return label
     }()
@@ -37,6 +40,7 @@ class GameMainInfoCellView: UITableViewCell {
     private let platformsLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.numberOfLines = 0
         label.textColor = .secondaryLabel
         return label
     }()
@@ -45,6 +49,7 @@ class GameMainInfoCellView: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = .secondaryLabel
+        label.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return label
     }()
     
@@ -58,6 +63,7 @@ class GameMainInfoCellView: UITableViewCell {
     }
     
     override func prepareForReuse() {
+        super.prepareForReuse()
         viewModel = nil
         disposeBag = DisposeBag()
     }
@@ -67,16 +73,14 @@ class GameMainInfoCellView: UITableViewCell {
         
         viewModel.coverImageData
             .drive(onNext: { [weak self] imageData in
-                .drive(onNext: { [weak self] imageData in
-                    if imageData.count > 0 {
-                        self?.coverImageView.image = UIImage(data: imageData)
-                    } else {
-                        self?.coverImageView.image = UIImage(systemName: "xmark.circle")
-                        self?.coverImageView.backgroundColor = .systemGray
-                        self?.coverImageView.tintColor = .white
-                        self?.coverImageView.contentMode = .center
-                    }
-                })
+                if imageData.count > 0 {
+                    self?.coverImageView.image = UIImage(data: imageData)
+                } else {
+                    self?.coverImageView.image = UIImage(systemName: "xmark.circle")
+                    self?.coverImageView.backgroundColor = .systemGray
+                    self?.coverImageView.tintColor = .white
+                    self?.coverImageView.contentMode = .center
+                }
             })
             .disposed(by: disposeBag)
         
@@ -88,10 +92,18 @@ class GameMainInfoCellView: UITableViewCell {
             .drive(genresLabel.rx.text)
             .disposed(by: disposeBag)
         
-        #warning("Implement rating and platforms in viewModel")
+        viewModel.rating
+            .drive(ratingLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel.platformsNames
+            .drive(platformsLabel.rx.text)
+            .disposed(by: disposeBag)
     }
     
     private func setupUI() {
+        selectionStyle = .none
+        
         coverImageView.snp.makeConstraints { make in
             make.width.equalTo(155)
             make.height.equalTo(220)
@@ -103,19 +115,29 @@ class GameMainInfoCellView: UITableViewCell {
         nameToPlatformsStackView.axis = .vertical
         nameToPlatformsStackView.spacing = 8
         nameToPlatformsStackView.alignment = .fill
-        nameToPlatformsStackView.distribution = .equalSpacing
+        nameToPlatformsStackView.distribution = .fillProportionally
+        nameToPlatformsStackView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         
-        let verticalStackView = UIStackView(arrangedSubviews: [nameToPlatformsStackView, ratingLabel])
+        // Spacer view to push the rating label to the bottom
+        let spacerView = UIView()
+        spacerView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        spacerView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        
+        let verticalStackView = UIStackView(arrangedSubviews: [nameToPlatformsStackView, spacerView, ratingLabel])
         verticalStackView.axis = .vertical
         verticalStackView.alignment = .fill
-        verticalStackView.distribution = .fillProportionally
+        verticalStackView.distribution = .fill
+        verticalStackView.spacing = 8
         
         let coverToDataStackView = UIStackView(arrangedSubviews: [coverImageView, verticalStackView])
         coverToDataStackView.axis = .horizontal
-        coverToDataStackView.spacing = 8
-        coverToDataStackView.distribution = .equalSpacing
+        coverToDataStackView.spacing = 16
+        coverToDataStackView.distribution = .fill
         coverToDataStackView.alignment = .fill
         
         contentView.addSubview(coverToDataStackView)
+        coverToDataStackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
+        }
     }
 }

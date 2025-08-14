@@ -10,7 +10,9 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class SimilarGameCellView: UITableViewCell {
+class SimilarGameCellView: UICollectionViewCell {
+    static let reuseIdentifier = "SimilarGameCellView"
+    
     private var viewModel: GameCellViewModelProtocol?
     private var disposeBag = DisposeBag()
     
@@ -29,8 +31,8 @@ class SimilarGameCellView: UITableViewCell {
         return label
     }()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         setupUI()
     }
     
@@ -39,6 +41,7 @@ class SimilarGameCellView: UITableViewCell {
     }
     
     override func prepareForReuse() {
+        super.prepareForReuse()
         viewModel = nil
         disposeBag = DisposeBag()
     }
@@ -78,5 +81,9 @@ class SimilarGameCellView: UITableViewCell {
         stackView.distribution = .equalSpacing
         stackView.alignment = .fill
         contentView.addSubview(stackView)
+        
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0))
+        }
     }
 }

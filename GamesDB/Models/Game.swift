@@ -74,11 +74,13 @@ struct ReleaseDate: Codable {
     let id: Int
     let human: String
     let releaseRegion: ReleaseRegion
+    let platform: Platform
     let date: Int?
 
     enum CodingKeys: String, CodingKey {
         case id, human
         case releaseRegion = "release_region"
+        case platform
         case date
     }
 }
@@ -98,15 +100,30 @@ enum Region: String, Codable {
     case japan = "japan"
     case northAmerica = "north_america"
     case worldwide = "worldwide"
+    
+    var representableFlag: String {
+        switch self {
+        case .asia: "🇵🇭"
+        case .australia: "🇦🇺"
+        case .brazil: "🇧🇷"
+        case .china: "🇨🇳"
+        case .europe: "🇪🇺"
+        case .japan: "🇯🇵"
+        case .northAmerica: "🇺🇸"
+        case .worldwide: "🌍"
+        }
+    }
 }
 
 // MARK: - Video
 struct Video: Codable {
     let id: Int
+    let name: String
     let videoID: String
 
     enum CodingKeys: String, CodingKey {
         case id
+        case name
         case videoID = "video_id"
     }
 }
@@ -124,11 +141,13 @@ struct GameQuery {
         "release_dates.date",
         "release_dates.human",
         "release_dates.release_region.region",
+        "release_dates.platform.name",
         "rating",
         "rating_count",
         "age_ratings.rating_category.rating",
         "age_ratings.rating_category.organization.name",
-        "videos.video_id"
+        "videos.video_id",
+        "videos.name"
     ]
     
     static func build(limit: Int, offset: Int) -> String {

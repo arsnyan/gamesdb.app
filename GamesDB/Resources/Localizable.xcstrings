@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Age Ratings" : {
+
+    },
     "Companies" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -15,6 +18,9 @@
     "Connection Error" : {
 
     },
+    "Details" : {
+
+    },
     "Game Engines" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -25,6 +31,9 @@
           }
         }
       }
+    },
+    "No summary available" : {
+
     },
     "No summary was provided for the game" : {
       "extractionState" : "manual",
@@ -47,6 +56,24 @@
           }
         }
       }
+    },
+    "Release Dates" : {
+
+    },
+    "Similar Games" : {
+
+    },
+    "Summary" : {
+
+    },
+    "TBD" : {
+
+    },
+    "Unknown Date" : {
+
+    },
+    "Videos" : {
+
     }
   },
   "version" : "1.0"

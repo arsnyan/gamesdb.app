@@ -10,7 +10,9 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
-class VideoCellView: UITableViewCell {
+class VideoCellView: UICollectionViewCell {
+    static let reuseIdentifier = "VideoCellView"
+    
     private var viewModel: VideoCellViewModelProtocol?
     private var disposeBag = DisposeBag()
     
@@ -30,8 +32,8 @@ class VideoCellView: UITableViewCell {
         return label
     }()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         setupUI()
     }
     
@@ -40,6 +42,7 @@ class VideoCellView: UITableViewCell {
     }
     
     override func prepareForReuse() {
+        super.prepareForReuse()
         viewModel = nil
         disposeBag = DisposeBag()
     }
@@ -78,6 +81,10 @@ class VideoCellView: UITableViewCell {
         stackView.spacing = 8
         stackView.alignment = .fill
         contentView.addSubview(stackView)
+        
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0))
+        }
     }
 }
 

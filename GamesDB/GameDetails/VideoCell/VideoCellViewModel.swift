@@ -12,3 +12,26 @@ protocol VideoCellViewModelProtocol {
     var videoCoverData: Driver<Data> { get }
     var videoTitle: Driver<String> { get }
 }
+
+class VideoCellViewModel: VideoCellViewModelProtocol {
+    private let video: Video
+    
+    private let networkManager = NetworkManager.shared
+    
+    var videoCoverData: Driver<Data> {
+        guard let url = URL(string: "https://img.youtube.com/vi/\(video.videoID)/0.jpg") else {
+            return Driver.just(Data())
+        }
+        
+        return networkManager.fetchImage(from: url)
+            .asDriver(onErrorJustReturn: Data())
+    }
+    
+    var videoTitle: Driver<String> {
+        Driver.just(video.name)
+    }
+    
+    init(video: Video) {
+        self.video = video
+    }
+}

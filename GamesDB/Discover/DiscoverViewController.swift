@@ -99,6 +99,21 @@ class DiscoverViewController: UICollectionViewController {
                 print(error)
             })
             .disposed(by: disposeBag)
+        
+        viewModel.navigationAction
+            .drive(onNext: { [weak self] action in
+                self?.handleNavigation(action)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func handleNavigation(_ action: NavigationAction) {
+        switch action {
+        case .showGameDetails(let game):
+            let gameDetailsViewModel = GameDetailsViewModel(game: game)
+            let gameDetailsVC = GameDetailsViewController(viewModel: gameDetailsViewModel)
+            navigationController?.pushViewController(gameDetailsVC, animated: true)
+        }
     }
     
     private func showError(_ error: Error) {
@@ -235,5 +250,12 @@ extension DiscoverViewController {
         if indexPath.item >= itemsCount - 5 && !isLoadingMore {
             viewModel.loadMoreGames()
         }
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let sectionType = DiscoverSectionType(rawValue: indexPath.section),
+              sectionType == .popularGames else { return }
+        
+        viewModel.selectGame(at: indexPath.item)
     }
 }

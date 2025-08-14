@@ -111,7 +111,7 @@ final class NetworkManager {
     
     // MARK: - Type fetching functions
     
-    func fetchGames(at page: Int, with searchQuery: String? = nil) -> Observable<[Game]> {
+    func fetchGames(at page: Int, with searchQuery: String? = "where rating_count > 5") -> Observable<[Game]> {
         fetch(
             type: [Game].self,
             endpoint: API.gamesEndpoint,
@@ -141,12 +141,16 @@ final class NetworkManager {
         )
     }
     
-    func fetchImage(by id: String, of size: APIImageSize) -> Observable<Data> {
+    func fetchImageFromIGDB(by id: String, of size: APIImageSize) -> Observable<Data> {
+        guard let url = URL(string: "\(API.imageBasePoint.rawValue)\(size.rawValue)/\(id).jpg") else {
+            return .error(NetworkError.invalidURL)
+        }
+        
+        return fetchImage(from: url)
+    }
+    
+    func fetchImage(from url: URL) -> Observable<Data> {
         Observable.create { [weak self] observer in
-            guard let url = URL(string: "\(API.imageBasePoint.rawValue)\(size.rawValue)/\(id).jpg") else {
-                observer.onError(URLError(.badURL))
-                return Disposables.create()
-            }
             let request = URLRequest(url: url)
             let task = self?.urlSession?.dataTask(with: request) { data, response, error in
                 guard let httpResponse = response as? HTTPURLResponse,

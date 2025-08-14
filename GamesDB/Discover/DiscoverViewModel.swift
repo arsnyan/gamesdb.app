@@ -44,10 +44,16 @@ protocol DiscoverViewModelProtocol {
     var gameCellViewModels: Driver<[GameCellViewModelProtocol]> { get }
     var isLoading: Driver<Bool> { get }
     var error: Driver<Error?> { get }
+    var navigationAction: Driver<NavigationAction> { get }
     
     func loadInitialData()
     func loadMoreGames()
     func refreshData()
+    func selectGame(at index: Int)
+}
+
+enum NavigationAction {
+    case showGameDetails(Game)
 }
 
 class DiscoverViewModel: DiscoverViewModelProtocol {
@@ -59,6 +65,9 @@ class DiscoverViewModel: DiscoverViewModelProtocol {
     private let gameCellViewModelsRelay = BehaviorRelay<[GameCellViewModelProtocol]>(value: [])
     private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
     private let errorRelay = BehaviorRelay<Error?>(value: nil)
+    private let navigationActionSubject = PublishSubject<NavigationAction>()
+    
+    private var games: [Game] = []
     
     private var currentGamesPage = 1
     private var canLoadMoreGames = true
@@ -84,6 +93,10 @@ class DiscoverViewModel: DiscoverViewModelProtocol {
         errorRelay.asDriver()
     }
     
+    var navigationAction: Driver<NavigationAction> {
+        navigationActionSubject.asDriver(onErrorDriveWith: .empty())
+    }
+    
     func loadInitialData() {
         isLoadingRelay.accept(true)
         errorRelay.accept(nil)
@@ -103,6 +116,8 @@ class DiscoverViewModel: DiscoverViewModelProtocol {
                     self?.companyCellViewModelsRelay.accept(companyCellVMs)
                     self?.gameEngineCellViewModelsRelay.accept(engineCellVMs)
                     self?.gameCellViewModelsRelay.accept(gameCellVMs)
+                    
+                    self?.games = games
                     
                     self?.currentGamesPage = 1
                     self?.canLoadMoreGames = games.count >= self?.pageSize ?? 0
@@ -131,6 +146,9 @@ class DiscoverViewModel: DiscoverViewModelProtocol {
                     let updatedGameCellVMs = currentGameCellVMs + newGameCellVMs
                     
                     gameCellViewModelsRelay.accept(updatedGameCellVMs)
+                    
+                    games.append(contentsOf: newGames)
+                    
                     currentGamesPage = nextPage
                     canLoadMoreGames = newGames.count >= pageSize
                     isLoadingRelay.accept(false)
@@ -147,5 +165,11 @@ class DiscoverViewModel: DiscoverViewModelProtocol {
         currentGamesPage = 1
         canLoadMoreGames = true
         loadInitialData()
+    }
+    
+    func selectGame(at index: Int) {
+        guard index < games.count else { return }
+        let selectedGame = games[index]
+        navigationActionSubject.onNext(.showGameDetails(selectedGame))
     }
 }
