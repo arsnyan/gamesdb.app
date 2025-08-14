@@ -23,7 +23,7 @@ class IconNameViewModel<T: NamedWithImageIdentifiable>: IconNameViewModelProtoco
     
     var imageData: Driver<Data> {
         guard let imageId = model.logo?.imageID else { return .just(Data()) }
-        return networkManager.fetchImage(by: imageId, of: .thumb)
+        return networkManager.fetchImageFromIGDB(by: imageId, of: .thumb)
             .asDriver(onErrorDriveWith: .empty())
     }
     

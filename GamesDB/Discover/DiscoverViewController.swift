@@ -64,21 +64,21 @@ class DiscoverViewController: UICollectionViewController {
         viewModel.companyCellViewModels
             .drive(onNext: { [weak self] cellViewModels in
                 self?.companyCellViewModels = cellViewModels
-                self?.collectionView.reloadSections(IndexSet(integer: SectionType.companies.rawValue))
+                self?.collectionView.reloadSections(IndexSet(integer: DiscoverSectionType.companies.rawValue))
             })
             .disposed(by: disposeBag)
         
         viewModel.gameEngineCellViewModels
             .drive(onNext: { [weak self] cellViewModels in
                 self?.gameEngineCellViewModels = cellViewModels
-                self?.collectionView.reloadSections(IndexSet(integer: SectionType.gameEngines.rawValue))
+                self?.collectionView.reloadSections(IndexSet(integer: DiscoverSectionType.gameEngines.rawValue))
             })
             .disposed(by: disposeBag)
         
         viewModel.gameCellViewModels
             .drive(onNext: { [weak self] cellViewModels in
                 self?.gameCellViewModels = cellViewModels
-                self?.collectionView.reloadSections(IndexSet(integer: SectionType.popularGames.rawValue))
+                self?.collectionView.reloadSections(IndexSet(integer: DiscoverSectionType.popularGames.rawValue))
             })
             .disposed(by: disposeBag)
         
@@ -99,6 +99,21 @@ class DiscoverViewController: UICollectionViewController {
                 print(error)
             })
             .disposed(by: disposeBag)
+        
+        viewModel.navigationAction
+            .drive(onNext: { [weak self] action in
+                self?.handleNavigation(action)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func handleNavigation(_ action: NavigationAction) {
+        switch action {
+        case .showGameDetails(let game):
+            let gameDetailsViewModel = GameDetailsViewModel(game: game)
+            let gameDetailsVC = GameDetailsViewController(viewModel: gameDetailsViewModel)
+            navigationController?.pushViewController(gameDetailsVC, animated: true)
+        }
     }
     
     private func showError(_ error: Error) {
@@ -112,7 +127,7 @@ class DiscoverViewController: UICollectionViewController {
     
     private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { [weak self] sectionIndex, environment in
-            guard let sectionType = SectionType(rawValue: sectionIndex) else {
+            guard let sectionType = DiscoverSectionType(rawValue: sectionIndex) else {
                 return self?.createDefaultSection()
             }
             
@@ -176,11 +191,11 @@ class DiscoverViewController: UICollectionViewController {
 // MARK: - UICollectionViewDataSource
 extension DiscoverViewController {
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return SectionType.allCases.count
+        return DiscoverSectionType.allCases.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let sectionType = SectionType(rawValue: section) else { return 0 }
+        guard let sectionType = DiscoverSectionType(rawValue: section) else { return 0 }
         
         switch sectionType {
         case .companies:
@@ -193,7 +208,7 @@ extension DiscoverViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let sectionType = SectionType(rawValue: indexPath.section) else {
+        guard let sectionType = DiscoverSectionType(rawValue: indexPath.section) else {
             return UICollectionViewCell()
         }
         
@@ -218,7 +233,7 @@ extension DiscoverViewController {
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader,
-              let sectionType = SectionType(rawValue: indexPath.section) else {
+              let sectionType = DiscoverSectionType(rawValue: indexPath.section) else {
             return UICollectionReusableView()
         }
         
@@ -228,12 +243,19 @@ extension DiscoverViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let sectionType = SectionType(rawValue: indexPath.section),
+        guard let sectionType = DiscoverSectionType(rawValue: indexPath.section),
               sectionType == .popularGames else { return }
         
         let itemsCount = gameCellViewModels.count
         if indexPath.item >= itemsCount - 5 && !isLoadingMore {
             viewModel.loadMoreGames()
         }
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let sectionType = DiscoverSectionType(rawValue: indexPath.section),
+              sectionType == .popularGames else { return }
+        
+        viewModel.selectGame(at: indexPath.item)
     }
 }

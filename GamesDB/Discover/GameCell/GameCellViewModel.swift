@@ -15,16 +15,20 @@ protocol GameCellViewModelProtocol {
     var genresNames: Driver<String> { get }
     var summary: Driver<String> { get }
     var platformsImagesDatas: Driver<[Data]> { get }
+    var platformsNames: Driver<String> { get }
+    var rating: Driver<String> { get }
+    
+    var game: Game { get }
 }
 
 class GameCellViewModel: GameCellViewModelProtocol {
-    private let game: Game
+    private(set) var game: Game
     
     private let networkManager = NetworkManager.shared
     
     var coverImageData: Driver<Data> {
         guard let imageUrlString = game.cover?.imageID else { return .just(Data()) }
-        return networkManager.fetchImage(by: imageUrlString, of: .coverSmall)
+        return networkManager.fetchImageFromIGDB(by: imageUrlString, of: .coverSmall)
             .asDriver(onErrorJustReturn: Data())
     }
     
@@ -44,12 +48,27 @@ class GameCellViewModel: GameCellViewModelProtocol {
     var platformsImagesDatas: Driver<[Data]> {
         guard let imagesUrls = game.platforms?.compactMap({ $0.platformLogo?.imageID }) else { return .just([]) }
         let imageObservables = imagesUrls.map { urlString in
-            networkManager.fetchImage(by: urlString, of: .thumb)
+            networkManager.fetchImageFromIGDB(by: urlString, of: .thumb)
                 .asObservable()
                 .catchAndReturn(Data())
         }
         return Observable.zip(imageObservables)
             .asDriver(onErrorJustReturn: [])
+    }
+    
+    var platformsNames: Driver<String> {
+        let names = game.platforms?.compactMap { $0.name }
+        return Driver.just(names?.joined(separator: ", ") ?? "No platforms specified")
+    }
+    
+    var rating: Driver<String> {
+        guard let rating = game.rating,
+              let ratingCount = game.ratingCount else {
+            return Driver.just("No rating")
+        }
+        
+        let formattedRating = String(format: "%.0f", rating)
+        return Driver.just("\(formattedRating)/100 from \(ratingCount) responses")
     }
     
     init(game: Game) {
