@@ -28,7 +28,7 @@ class VideoCellViewModel: VideoCellViewModelProtocol {
     }
     
     var videoTitle: Driver<String> {
-        Driver.just(video.name)
+        Driver.just(video.name ?? "Title not specified")
     }
     
     init(video: Video) {

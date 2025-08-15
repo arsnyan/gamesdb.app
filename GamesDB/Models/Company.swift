@@ -8,6 +8,7 @@
 import Foundation
 
 protocol NamedWithImageIdentifiable {
+    var id: Int { get }
     var name: String { get }
     var logo: IGDBImageResource? { get }
 }

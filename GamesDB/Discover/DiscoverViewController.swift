@@ -8,15 +8,66 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RxDataSources
+import SnapKit
 
-class DiscoverViewController: UICollectionViewController {
+struct DiscoverSectionModel {
+    let section: DiscoverSection
+    var items: [DiscoverItem]
+}
+
+enum DiscoverItem {
+    case company(IconNameViewModelProtocol)
+    case gameEngine(IconNameViewModelProtocol)
+    case game(GameCellViewModelProtocol)
+}
+
+extension DiscoverItem: IdentifiableType, Equatable {
+    var identity: String {
+        switch self {
+        case .company(let viewModel):
+            "company-\(viewModel.id)"
+        case .gameEngine(let viewModel):
+            "engine\(viewModel.id)"
+        case .game(let viewModel):
+            "game-\(viewModel.id)"
+        }
+    }
+    
+    static func == (lhs: DiscoverItem, rhs: DiscoverItem) -> Bool {
+        lhs.identity == rhs.identity
+    }
+}
+
+extension DiscoverSectionModel: AnimatableSectionModelType {
+    var identity: DiscoverSection {
+        section
+    }
+    
+    init(original: DiscoverSectionModel, items: [DiscoverItem]) {
+        self = original
+        self.items = items
+    }
+}
+
+class DiscoverViewController: UIViewController {
     private let viewModel: DiscoverViewModelProtocol
     private let disposeBag = DisposeBag()
     
-    private var companyCellViewModels: [IconNameViewModelProtocol] = []
-    private var gameEngineCellViewModels: [IconNameViewModelProtocol] = []
-    private var gameCellViewModels: [GameCellViewModelProtocol] = []
     private var isLoadingMore = false
+    
+    private lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCompositionalLayout())
+        collectionView.backgroundColor = .systemBackground
+        return collectionView
+    }()
+    
+    private lazy var dataSource = RxCollectionViewSectionedAnimatedDataSource<DiscoverSectionModel>(
+        configureCell: { [weak self] dataSource, collectionView, indexPath, item in
+        self?.configureCell(for: item, at: indexPath) ?? UICollectionViewCell()
+    }, configureSupplementaryView: { [weak self] dataSource, collectionView, kind, indexPath in
+        self?.configureHeader(for: kind, at: indexPath) ?? UICollectionReusableView()
+    })
     
     private lazy var refreshControl: UIRefreshControl = {
         let refresh = UIRefreshControl()
@@ -25,7 +76,7 @@ class DiscoverViewController: UICollectionViewController {
     
     init(viewModel: DiscoverViewModelProtocol) {
         self.viewModel = viewModel
-        super.init(collectionViewLayout: UICollectionViewLayout())
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -34,6 +85,7 @@ class DiscoverViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Discover"
         setupCollectionView()
         bindViewModel()
         setupRefreshControl()
@@ -50,9 +102,13 @@ class DiscoverViewController: UICollectionViewController {
     }
     
     private func setupCollectionView() {
-        title = "Discover"
-        collectionView.backgroundColor = .systemBackground
-        collectionView.collectionViewLayout = createCompositionalLayout()
+        collectionView.delegate = self
+        collectionView.prefetchDataSource = self
+        view.addSubview(collectionView)
+        
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
         collectionView.register(IconNameCellView.self, forCellWithReuseIdentifier: "CompanyCell")
         collectionView.register(IconNameCellView.self, forCellWithReuseIdentifier: "GameEngineCell")
@@ -61,34 +117,53 @@ class DiscoverViewController: UICollectionViewController {
     }
     
     private func bindViewModel() {
-        viewModel.companyCellViewModels
-            .drive(onNext: { [weak self] cellViewModels in
-                self?.companyCellViewModels = cellViewModels
-                self?.collectionView.reloadSections(IndexSet(integer: DiscoverSectionType.companies.rawValue))
-            })
-            .disposed(by: disposeBag)
+        let companiesSection: Driver<DiscoverSectionModel> = viewModel.companyCellViewModels
+            .map { companyVMs in
+                DiscoverSectionModel(
+                    section: .companies,
+                    items: companyVMs.map({ DiscoverItem.company($0) })
+                )
+            }
         
-        viewModel.gameEngineCellViewModels
-            .drive(onNext: { [weak self] cellViewModels in
-                self?.gameEngineCellViewModels = cellViewModels
-                self?.collectionView.reloadSections(IndexSet(integer: DiscoverSectionType.gameEngines.rawValue))
-            })
+        let enginesSection: Driver<DiscoverSectionModel> = viewModel.gameEngineCellViewModels
+            .map { engineVMS in
+                DiscoverSectionModel(
+                    section: .gameEngines,
+                    items: engineVMS.map({ DiscoverItem.gameEngine($0) })
+                )
+            }
+        
+        let gamesSection: Driver<DiscoverSectionModel> = viewModel.gameCellViewModels
+            .map { gameVMs in
+                DiscoverSectionModel(
+                    section: .popularGames,
+                    items: gameVMs.map({ DiscoverItem.game($0) })
+                )
+            }
+        
+        let sections: Driver<[DiscoverSectionModel]> = Driver.combineLatest(
+            companiesSection,
+            enginesSection,
+            gamesSection
+        ) { companies, engines, games in
+            [companies, engines, games]
+        }
+        
+        sections
+            .drive(collectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
         viewModel.gameCellViewModels
-            .drive(onNext: { [weak self] cellViewModels in
-                self?.gameCellViewModels = cellViewModels
-                self?.collectionView.reloadSections(IndexSet(integer: DiscoverSectionType.popularGames.rawValue))
+            .drive(onNext: { [weak self] _ in
+                self?.isLoadingMore = false
             })
             .disposed(by: disposeBag)
         
         viewModel.isLoading
-            .drive(onNext: { [weak self] isLoading in
-                self?.isLoadingMore = isLoading
-                
-                if !isLoading && self?.refreshControl.isRefreshing == true {
-                    self?.refreshControl.endRefreshing()
-                }
+            .filter { !$0 }
+            .drive(onNext: { [weak self] _ in
+                self?.refreshControl.endRefreshing()
+                self?.isLoadingMore = false
             })
             .disposed(by: disposeBag)
         
@@ -127,7 +202,7 @@ class DiscoverViewController: UICollectionViewController {
     
     private func createCompositionalLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { [weak self] sectionIndex, environment in
-            guard let sectionType = DiscoverSectionType(rawValue: sectionIndex) else {
+            guard let sectionType = DiscoverSection(rawValue: sectionIndex) else {
                 return self?.createDefaultSection()
             }
             
@@ -186,76 +261,75 @@ class DiscoverViewController: UICollectionViewController {
         
         return NSCollectionLayoutSection(group: group)
     }
-}
-
-// MARK: - UICollectionViewDataSource
-extension DiscoverViewController {
-    override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return DiscoverSectionType.allCases.count
-    }
     
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let sectionType = DiscoverSectionType(rawValue: section) else { return 0 }
-        
-        switch sectionType {
-        case .companies:
-            return companyCellViewModels.count
-        case .gameEngines:
-            return gameEngineCellViewModels.count
-        case .popularGames:
-            return gameCellViewModels.count
-        }
-    }
-    
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let sectionType = DiscoverSectionType(rawValue: indexPath.section) else {
-            return UICollectionViewCell()
-        }
-        
-        switch sectionType {
-        case .companies:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CompanyCell", for: indexPath) as! IconNameCellView
-            let cellViewModel = companyCellViewModels[indexPath.item]
-            cell.bind(to: cellViewModel)
+    private func configureCell(for item: DiscoverItem, at indexPath: IndexPath) -> UICollectionViewCell {
+        switch item {
+        case .company(let viewModel):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CompanyCell", for: indexPath) as? IconNameCellView else {
+                return UICollectionViewCell()
+            }
+            cell.bind(to: viewModel)
             return cell
-        case .gameEngines:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GameEngineCell", for: indexPath) as! IconNameCellView
-            let cellViewModel = gameEngineCellViewModels[indexPath.item]
-            cell.bind(to: cellViewModel)
+        case .gameEngine(let viewModel):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GameEngineCell", for: indexPath) as? IconNameCellView else {
+                return UICollectionViewCell()
+            }
+            cell.bind(to: viewModel)
             return cell
-        case .popularGames:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GameCell", for: indexPath) as! GameCellView
-            let cellViewModel = gameCellViewModels[indexPath.item]
-            cell.bind(to: cellViewModel)
+        case .game(let viewModel):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GameCellView.reuseIdentifier, for: indexPath) as? GameCellView else {
+                return UICollectionViewCell()
+            }
+            cell.bind(to: viewModel)
             return cell
         }
     }
     
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    private func configureHeader(for kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader,
-              let sectionType = DiscoverSectionType(rawValue: indexPath.section) else {
+              let sectionType = DiscoverSection(rawValue: indexPath.section) else {
             return UICollectionReusableView()
         }
         
-        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SectionHeaderView.identifier, for: indexPath) as! SectionHeaderView
+        let header = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: SectionHeaderView.identifier,
+            for: indexPath
+        ) as! SectionHeaderView
         header.configure(with: sectionType.title, and: sectionType.iconName)
         return header
     }
-    
-    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let sectionType = DiscoverSectionType(rawValue: indexPath.section),
-              sectionType == .popularGames else { return }
-        
-        let itemsCount = gameCellViewModels.count
-        if indexPath.item >= itemsCount - 5 && !isLoadingMore {
-            viewModel.loadMoreGames()
-        }
-    }
-    
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let sectionType = DiscoverSectionType(rawValue: indexPath.section),
+}
+
+// MARK: - UICollectionViewDelegate
+extension DiscoverViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let sectionType = DiscoverSection(rawValue: indexPath.section),
               sectionType == .popularGames else { return }
         
         viewModel.selectGame(at: indexPath.item)
+    }
+}
+
+// MARK: - UICollectionViewDataSourcePrefetching
+extension DiscoverViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        let popularGamesIndexPaths = indexPaths.filter { indexPath in
+            guard let sectionType = DiscoverSection(rawValue: indexPath.section) else {
+                return false
+            }
+            return sectionType == .popularGames
+        }
+        
+        guard !popularGamesIndexPaths.isEmpty else { return }
+        
+        let currentItemsCount = dataSource.sectionModels.isEmpty ? 0 : dataSource.sectionModels[DiscoverSection.popularGames.rawValue].items.count
+        
+        let maxItemIndex = popularGamesIndexPaths.map(\.item).max() ?? 0
+        
+        if maxItemIndex >= currentItemsCount - 5 && !isLoadingMore {
+            isLoadingMore = true
+            viewModel.loadMoreGames()
+        }
     }
 }

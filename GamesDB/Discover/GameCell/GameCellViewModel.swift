@@ -10,6 +10,7 @@ import RxSwift
 import RxCocoa
 
 protocol GameCellViewModelProtocol {
+    var id: Int { get }
     var coverImageData: Driver<Data> { get }
     var name: Driver<String> { get }
     var genresNames: Driver<String> { get }
@@ -25,6 +26,10 @@ class GameCellViewModel: GameCellViewModelProtocol {
     private(set) var game: Game
     
     private let networkManager = NetworkManager.shared
+    
+    var id: Int {
+        game.id
+    }
     
     var coverImageData: Driver<Data> {
         guard let imageUrlString = game.cover?.imageID else { return .just(Data()) }

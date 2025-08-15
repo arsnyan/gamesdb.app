@@ -11,6 +11,8 @@ import RxCocoa
 import SnapKit
 
 class GameCellView: UICollectionViewCell {
+    static let reuseIdentifier = "GameCell"
+    
     private let coverImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -49,6 +51,14 @@ class GameCellView: UICollectionViewCell {
         return stack
     }()
     
+    private lazy var loadingIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.center = coverImageView.center
+        indicator.hidesWhenStopped = true
+        indicator.startAnimating()
+        return indicator
+    }()
+    
     private var viewModel: GameCellViewModelProtocol?
     private var disposeBag = DisposeBag()
     
@@ -65,6 +75,10 @@ class GameCellView: UICollectionViewCell {
         super.prepareForReuse()
         disposeBag = DisposeBag()
         viewModel = nil
+        
+        loadingIndicator.startAnimating()
+        
+        coverImageView.image = nil
     }
     
     func bind(to viewModel: GameCellViewModelProtocol) {
@@ -80,6 +94,8 @@ class GameCellView: UICollectionViewCell {
                     self?.coverImageView.tintColor = .white
                     self?.coverImageView.contentMode = .center
                 }
+                
+                self?.loadingIndicator.stopAnimating()
             })
             .disposed(by: disposeBag)
         

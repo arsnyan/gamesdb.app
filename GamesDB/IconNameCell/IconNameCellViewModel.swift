@@ -9,6 +9,7 @@ import Foundation
 import RxCocoa
 
 protocol IconNameViewModelProtocol {
+    var id: Int { get }
     var name: Driver<String> { get }
     var imageData: Driver<Data> { get }
 }
@@ -16,6 +17,10 @@ protocol IconNameViewModelProtocol {
 class IconNameViewModel<T: NamedWithImageIdentifiable>: IconNameViewModelProtocol {
     private let networkManager = NetworkManager.shared
     private let model: NamedWithImageIdentifiable
+    
+    var id: Int {
+        model.id
+    }
     
     var name: Driver<String> {
         Driver.just(model.name)

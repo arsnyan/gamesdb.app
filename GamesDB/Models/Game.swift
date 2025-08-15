@@ -96,17 +96,21 @@ enum Region: String, Codable {
     case australia = "australia"
     case brazil = "brazil"
     case china = "china"
+    case korea = "korea"
     case europe = "europe"
     case japan = "japan"
     case northAmerica = "north_america"
+    case newZealand = "new_zealand"
     case worldwide = "worldwide"
     
     var representableFlag: String {
         switch self {
         case .asia: "🇵🇭"
         case .australia: "🇦🇺"
+        case .newZealand: "🇳🇿"
         case .brazil: "🇧🇷"
         case .china: "🇨🇳"
+        case .korea: "🇰🇷"
         case .europe: "🇪🇺"
         case .japan: "🇯🇵"
         case .northAmerica: "🇺🇸"
@@ -118,7 +122,7 @@ enum Region: String, Codable {
 // MARK: - Video
 struct Video: Codable {
     let id: Int
-    let name: String
+    let name: String?
     let videoID: String
 
     enum CodingKeys: String, CodingKey {

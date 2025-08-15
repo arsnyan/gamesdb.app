@@ -10,7 +10,7 @@ import RxRelay
 import RxSwift
 import RxCocoa
 
-enum DiscoverSectionType: Int, CaseIterable {
+enum DiscoverSection: Int, CaseIterable {
     case companies = 0
     case gameEngines = 1
     case popularGames = 2
@@ -43,6 +43,7 @@ protocol DiscoverViewModelProtocol {
     var gameEngineCellViewModels: Driver<[IconNameViewModelProtocol]> { get }
     var gameCellViewModels: Driver<[GameCellViewModelProtocol]> { get }
     var isLoading: Driver<Bool> { get }
+    var isLoadingMore: Driver<Bool> { get }
     var error: Driver<Error?> { get }
     var navigationAction: Driver<NavigationAction> { get }
     
@@ -64,6 +65,7 @@ class DiscoverViewModel: DiscoverViewModelProtocol {
     private let gameEngineCellViewModelsRelay = BehaviorRelay<[IconNameViewModelProtocol]>(value: [])
     private let gameCellViewModelsRelay = BehaviorRelay<[GameCellViewModelProtocol]>(value: [])
     private let isLoadingRelay = BehaviorRelay<Bool>(value: false)
+    private let isLoadingMoreRelay = BehaviorRelay<Bool>(value: false)
     private let errorRelay = BehaviorRelay<Error?>(value: nil)
     private let navigationActionSubject = PublishSubject<NavigationAction>()
     
@@ -87,6 +89,10 @@ class DiscoverViewModel: DiscoverViewModelProtocol {
     
     var isLoading: Driver<Bool> {
         isLoadingRelay.asDriver()
+    }
+    
+    var isLoadingMore: Driver<Bool> {
+        isLoadingMoreRelay.asDriver()
     }
     
     var error: Driver<Error?> {
@@ -134,7 +140,7 @@ class DiscoverViewModel: DiscoverViewModelProtocol {
     func loadMoreGames() {
         guard canLoadMoreGames, !isLoadingRelay.value else { return }
         let nextPage = currentGamesPage + 1
-        isLoadingRelay.accept(true)
+        isLoadingMoreRelay.accept(true)
         
         networkManager.fetchGames(at: nextPage)
             .observe(on: MainScheduler.instance)
@@ -151,11 +157,11 @@ class DiscoverViewModel: DiscoverViewModelProtocol {
                     
                     currentGamesPage = nextPage
                     canLoadMoreGames = newGames.count >= pageSize
-                    isLoadingRelay.accept(false)
+                    isLoadingMoreRelay.accept(false)
                 },
                 onError: { [weak self] error in
                     self?.errorRelay.accept(error)
-                    self?.isLoadingRelay.accept(false)
+                    self?.isLoadingMoreRelay.accept(false)
                 }
             )
             .disposed(by: disposeBag)
