@@ -10,8 +10,14 @@ import RxSwift
 import RxCocoa
 import SnapKit
 
+protocol HorizontalCellViewDelegate: AnyObject {
+    func didSelectVideo(_ videoUrl: URL)
+}
+
 class HorizontalVideosView: UITableViewCell {
     static let reuseIdentifier = "HorizontalVideosView"
+    
+    weak var delegate: HorizontalCellViewDelegate?
     
     private var viewModels: [VideoCellViewModelProtocol] = []
     private var disposeBag = DisposeBag()
@@ -19,7 +25,7 @@ class HorizontalVideosView: UITableViewCell {
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 192, height: 150) // Adjust based on your video cell size
+        layout.itemSize = CGSize(width: 192, height: 150)
         layout.minimumLineSpacing = 16
         layout.minimumInteritemSpacing = 0
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
@@ -59,7 +65,7 @@ class HorizontalVideosView: UITableViewCell {
         contentView.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalTo(170) // Adjust based on your cell height + padding
+            make.height.equalTo(170)
         }
     }
     
@@ -82,5 +88,13 @@ extension HorizontalVideosView: UICollectionViewDataSource, UICollectionViewDele
         let viewModel = viewModels[indexPath.item]
         cell.bind(to: viewModel)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let item = viewModels[indexPath.item]
+        guard let url = URL(string: "https://www.youtube.com/watch?v=\(item.videoId)") else { return }
+        print("https://www.youtube.com/watch?v=v\(item.videoId)")
+        
+        delegate?.didSelectVideo(url)
     }
 }

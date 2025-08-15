@@ -9,6 +9,7 @@ import UIKit
 import RxCocoa
 import RxSwift
 import RxDataSources
+import SafariServices
 
 struct GameDetailsSectionModel {
     let section: GameDetailSection
@@ -188,6 +189,7 @@ class GameDetailsViewController: UIViewController {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HorizontalVideosView.reuseIdentifier, for: indexPath) as? HorizontalVideosView else {
                 return UITableViewCell()
             }
+            cell.delegate = self
             cell.bind(to: viewModels)
             return cell
         case .releaseDate(let viewModel):
@@ -214,5 +216,12 @@ class GameDetailsViewController: UIViewController {
             cell.bind(to: viewModels)
             return cell
         }
+    }
+}
+
+extension GameDetailsViewController: HorizontalCellViewDelegate {
+    func didSelectVideo(_ videoUrl: URL) {
+        let safariVC = SFSafariViewController(url: videoUrl)
+        present(safariVC, animated: true)
     }
 }

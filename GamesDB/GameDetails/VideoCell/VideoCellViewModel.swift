@@ -11,6 +11,7 @@ import RxCocoa
 protocol VideoCellViewModelProtocol {
     var videoCoverData: Driver<Data> { get }
     var videoTitle: Driver<String> { get }
+    var videoId: String { get }
 }
 
 class VideoCellViewModel: VideoCellViewModelProtocol {
@@ -29,6 +30,10 @@ class VideoCellViewModel: VideoCellViewModelProtocol {
     
     var videoTitle: Driver<String> {
         Driver.just(video.name ?? "Title not specified")
+    }
+    
+    var videoId: String {
+        video.videoID
     }
     
     init(video: Video) {
