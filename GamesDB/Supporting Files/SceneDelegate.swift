@@ -55,7 +55,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private func showConfigurationError(_ error: Error) {
         let alert = UIAlertController(title: String(localized: "Connection Error"), message: error.localizedDescription, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: String(localized: "OK"), style: .default))
         window?.rootViewController?.present(alert, animated: true)
     }
 }

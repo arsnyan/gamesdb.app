@@ -7,12 +7,40 @@
 		<key>GamesDB.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>1</integer>
+		</dict>
+		<key>Rx (Playground).xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
 		</dict>
 		<key>SnapKitAndRxSwiftSample.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+		<key>SnapKitPlayground (Playground).xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>2E9737C22E48A0E8004EEAB1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2E9737D82E48A0E9004EEAB1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2E9737E22E48A0E9004EEAB1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

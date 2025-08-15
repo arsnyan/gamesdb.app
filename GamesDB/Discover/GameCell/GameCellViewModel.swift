@@ -59,7 +59,7 @@ class GameCellViewModel: GameCellViewModelProtocol {
     }
     
     var summary: Driver<String> {
-        Driver.just(game.summary ?? String(localized: "No summary was provided for the game"))
+        Driver.just(game.summary ?? String(localized: "No summary available"))
     }
     
     var platformsImagesDatas: Driver<[Data]> {
@@ -75,7 +75,7 @@ class GameCellViewModel: GameCellViewModelProtocol {
     
     var platformsNames: Driver<String> {
         let names = game.platforms?.compactMap { $0.name }
-        return Driver.just(names?.joined(separator: ", ") ?? "No platforms specified")
+        return Driver.just(names?.joined(separator: ", ") ?? String(localized: "No platforms specified"))
     }
     
     var rating: Driver<String> {
@@ -84,8 +84,9 @@ class GameCellViewModel: GameCellViewModelProtocol {
             return Driver.just("No rating")
         }
         
-        let formattedRating = String(format: "%.0f", rating)
-        return Driver.just("\(formattedRating)/100 from \(ratingCount) responses")
+        let formattedRating = String(format: "%.1f", rating / 10)
+        let formatString = String(localized: "%1$(rating)@/10 from %2$(ratingCount)lld responses")
+        return Driver.just(String(format: formatString, formattedRating, ratingCount))
     }
     
     init(game: Game) {

@@ -85,7 +85,7 @@ class DiscoverViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Discover"
+        title = String(localized: "Discover")
         setupCollectionView()
         bindViewModel()
         setupRefreshControl()
@@ -192,9 +192,9 @@ class DiscoverViewController: UIViewController {
     }
     
     private func showError(_ error: Error) {
-        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        alert.addAction(UIAlertAction(title: "Retry", style: .default, handler: { [weak self] _ in
+        let alert = UIAlertController(title: String(localized: "Error"), message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: String(localized: "OK"), style: .default))
+        alert.addAction(UIAlertAction(title: String(localized: "Retry"), style: .default, handler: { [weak self] _ in
             self?.viewModel.loadInitialData()
         }))
         present(alert, animated: true)

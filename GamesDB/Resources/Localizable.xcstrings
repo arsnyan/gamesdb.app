@@ -1,8 +1,26 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%1$(rating)@/10 from %2$(ratingCount)lld responses" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(rating)@/10 на основании %2$(ratingCount)lld ответов"
+          }
+        }
+      }
+    },
     "Age Ratings" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оценки возрастного рейтинга"
+          }
+        }
+      }
     },
     "Companies" : {
       "extractionState" : "manual",
@@ -16,10 +34,44 @@
       }
     },
     "Connection Error" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет интернета"
+          }
+        }
+      }
     },
     "Details" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подробнее"
+          }
+        }
+      }
+    },
+    "Discover" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обзор"
+          }
+        }
+      }
+    },
+    "Error" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка"
+          }
+        }
+      }
     },
     "Game Engines" : {
       "extractionState" : "manual",
@@ -32,8 +84,25 @@
         }
       }
     },
+    "No platforms specified" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Платформы не указаны"
+          }
+        }
+      }
+    },
     "No summary available" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет краткого описания"
+          }
+        }
+      }
     },
     "No summary was provided for the game" : {
       "extractionState" : "manual",
@@ -42,6 +111,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Эта игра без описания"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ОК"
           }
         }
       }
@@ -58,22 +137,84 @@
       }
     },
     "Release Dates" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Даты релизов"
+          }
+        }
+      }
+    },
+    "Retry" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Попробовать ещё раз"
+          }
+        }
+      }
     },
     "Similar Games" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Похожие игры"
+          }
+        }
+      }
     },
     "Summary" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Краткое описание"
+          }
+        }
+      }
     },
     "TBD" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пока неизвестно"
+          }
+        }
+      }
+    },
+    "Title not specified" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без заголовка"
+          }
+        }
+      }
     },
     "Unknown Date" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неизвестный формат даты"
+          }
+        }
+      }
     },
     "Videos" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видео"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

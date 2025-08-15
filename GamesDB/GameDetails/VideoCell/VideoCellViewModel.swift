@@ -29,7 +29,7 @@ class VideoCellViewModel: VideoCellViewModelProtocol {
     }
     
     var videoTitle: Driver<String> {
-        Driver.just(video.name ?? "Title not specified")
+        Driver.just(video.name ?? String(localized: "Title not specified"))
     }
     
     var videoId: String {
