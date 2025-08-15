@@ -18,6 +18,8 @@ class IconNameViewModel<T: NamedWithImageIdentifiable>: IconNameViewModelProtoco
     private let networkManager = NetworkManager.shared
     private let model: NamedWithImageIdentifiable
     
+    private let cache = NSCache<NSString, NSData>()
+    
     var id: Int {
         model.id
     }
@@ -28,8 +30,18 @@ class IconNameViewModel<T: NamedWithImageIdentifiable>: IconNameViewModelProtoco
     
     var imageData: Driver<Data> {
         guard let imageId = model.logo?.imageID else { return .just(Data()) }
-        return networkManager.fetchImageFromIGDB(by: imageId, of: .thumb)
-            .asDriver(onErrorDriveWith: .empty())
+        
+        let cacheKey = NSString(string: imageId)
+        
+        if let cachedData = cache.object(forKey: cacheKey) {
+            return .just(cachedData as Data)
+        } else {
+            return networkManager.fetchImageFromIGDB(by: imageId, of: .thumb)
+                .do(onNext: { [weak self] data in
+                    self?.cache.setObject(data as NSData, forKey: cacheKey)
+                })
+                .asDriver(onErrorJustReturn: Data())
+        }
     }
     
     init(model: NamedWithImageIdentifiable) {
