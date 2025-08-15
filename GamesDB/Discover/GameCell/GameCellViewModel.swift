@@ -27,14 +27,26 @@ class GameCellViewModel: GameCellViewModelProtocol {
     
     private let networkManager = NetworkManager.shared
     
+    private let cache = NSCache<NSString, NSData>()
+    
     var id: Int {
         game.id
     }
     
     var coverImageData: Driver<Data> {
-        guard let imageUrlString = game.cover?.imageID else { return .just(Data()) }
-        return networkManager.fetchImageFromIGDB(by: imageUrlString, of: .coverSmall)
-            .asDriver(onErrorJustReturn: Data())
+        guard let imageId = game.cover?.imageID else { return .just(Data()) }
+        
+        let cacheKey = NSString(string: imageId)
+        
+        if let cachedData = cache.object(forKey: cacheKey) {
+            return .just(cachedData as Data)
+        } else {
+            return networkManager.fetchImageFromIGDB(by: imageId, of: .coverSmall)
+                .do(onNext: { [weak self] data in
+                    self?.cache.setObject(data as NSData, forKey: cacheKey)
+                })
+                .asDriver(onErrorJustReturn: Data())
+        }
     }
     
     var name: Driver<String> {
