@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E3AC3762E4F54C000F4B43F /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 2E3AC3752E4F54C000F4B43F /* AppIcon.icon */; };
 		2E5235392E4B3DCD008DE325 /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E5235382E4B3DCD008DE325 /* SectionHeaderView.swift */; };
 		2E6636092E4CB57700870956 /* GameDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E6636082E4CB57700870956 /* GameDetailsViewController.swift */; };
 		2E66360B2E4CB7F800870956 /* GameDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E66360A2E4CB7F800870956 /* GameDetailsViewModel.swift */; };
@@ -67,6 +68,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2E3AC3752E4F54C000F4B43F /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		2E5235382E4B3DCD008DE325 /* SectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeaderView.swift; sourceTree = "<group>"; };
 		2E6636082E4CB57700870956 /* GameDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailsViewController.swift; sourceTree = "<group>"; };
 		2E66360A2E4CB7F800870956 /* GameDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailsViewModel.swift; sourceTree = "<group>"; };
@@ -264,6 +266,7 @@
 			children = (
 				2E9738022E490315004EEAB1 /* Assets.xcassets */,
 				2EECC7D72E4A66E300B8A7C9 /* Localizable.xcstrings */,
+				2E3AC3752E4F54C000F4B43F /* AppIcon.icon */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -450,6 +453,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E9738242E492897004EEAB1 /* Secrets.plist in Resources */,
+				2E3AC3762E4F54C000F4B43F /* AppIcon.icon in Resources */,
 				2E97380A2E490315004EEAB1 /* Assets.xcassets in Resources */,
 				2EECC7D82E4A66E300B8A7C9 /* Localizable.xcstrings in Resources */,
 			);

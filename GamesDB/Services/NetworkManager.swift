@@ -121,7 +121,7 @@ final class NetworkManager {
         )
     }
     
-    func fetchCompanies(at page: Int, with searchQuery: String? = "where logo != null") -> Observable<[Company]> {
+    func fetchCompanies(at page: Int, with searchQuery: String? = "where logo != null;\nsort developed asc") -> Observable<[Company]> {
         fetch(
             type: [Company].self,
             endpoint: API.companiesEndpoint,
@@ -131,7 +131,7 @@ final class NetworkManager {
         )
     }
     
-    func fetchGameEngines(at page: Int, with searchQuery: String? = "where logo != null") -> Observable<[GameEngine]> {
+    func fetchGameEngines(at page: Int, with searchQuery: String? = "where logo != null;\nsort companies asc") -> Observable<[GameEngine]> {
         fetch(
             type: [GameEngine].self,
             endpoint: API.gameEnginesEndpoint,
