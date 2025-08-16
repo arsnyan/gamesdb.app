@@ -216,11 +216,11 @@ class DiscoverViewController: UIViewController {
     }
     
     private func createHorizontalSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(100), heightDimension: .absolute(80))
+        let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(100), heightDimension: .estimated(80))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(100), heightDimension: .absolute(80))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(100), heightDimension: .estimated(80))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)
@@ -235,11 +235,11 @@ class DiscoverViewController: UIViewController {
     }
     
     private func createVerticalSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(120))
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(180))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.contentInsets = .zero
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(120))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(180))
         let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)

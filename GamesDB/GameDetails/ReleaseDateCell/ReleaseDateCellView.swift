@@ -32,7 +32,7 @@ class ReleaseDateCellView: UITableViewCell {
     
     private let releaseDateLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17)
+        label.font = .preferredFont(forTextStyle: .body)
         // Placeholder
         label.text = "--"
         label.textColor = .label
@@ -169,7 +169,7 @@ class ReleaseDateCellView: UITableViewCell {
         
         let label = UILabel()
         label.text = name
-        label.font = .systemFont(ofSize: 14)
+        label.font = .preferredFont(forTextStyle: .callout)
         
         container.addSubview(label)
         label.snp.makeConstraints { make in

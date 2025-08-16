@@ -24,7 +24,7 @@ class SimilarGameCellView: UICollectionViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .medium)
+        label.font = .preferredFont(forTextStyle: .headline)
         label.numberOfLines = 3
         label.textAlignment = .natural
         label.lineBreakMode = .byWordWrapping

@@ -24,14 +24,15 @@ class GameMainInfoCellView: UITableViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .medium)
+        label.font = .preferredFont(forTextStyle: .title2)
+        label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
         return label
     }()
     
     private let genresLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .footnote)
         label.numberOfLines = 0
         label.textColor = .secondaryLabel
         return label
@@ -39,7 +40,7 @@ class GameMainInfoCellView: UITableViewCell {
     
     private let platformsLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .footnote)
         label.numberOfLines = 0
         label.textColor = .secondaryLabel
         return label
@@ -47,7 +48,8 @@ class GameMainInfoCellView: UITableViewCell {
     
     private let ratingLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .footnote)
+        label.adjustsFontForContentSizeCategory = true
         label.textColor = .secondaryLabel
         label.numberOfLines = 0
         label.setContentHuggingPriority(.defaultHigh, for: .vertical)

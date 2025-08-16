@@ -21,14 +21,15 @@ class GameCellView: UICollectionViewCell {
     
     private let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.font = .preferredFont(forTextStyle: .headline)
+        label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 1
         return label
     }()
     
     private let genresLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 10, weight: .light)
+        label.font = .preferredFont(forTextStyle: .footnote)
         label.textColor = .systemGray
         label.numberOfLines = 1
         return label
@@ -36,7 +37,7 @@ class GameCellView: UICollectionViewCell {
     
     private let summaryLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 10, weight: .light)
+        label.font = .preferredFont(forTextStyle: .body)
         label.numberOfLines = 2
         label.lineBreakMode = .byTruncatingTail
         return label
