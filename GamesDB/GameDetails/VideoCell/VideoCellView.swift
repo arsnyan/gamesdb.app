@@ -25,7 +25,7 @@ class VideoCellView: UICollectionViewCell {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17)
+        label.font = .preferredFont(forTextStyle: .title3)
         label.textColor = .label
         label.numberOfLines = 2
         label.lineBreakMode = .byTruncatingTail
